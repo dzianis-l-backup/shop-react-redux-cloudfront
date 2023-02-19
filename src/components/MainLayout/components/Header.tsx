@@ -33,7 +33,7 @@ export default function Header() {
             underline="none"
             to="/"
           >
-            Danny drumsticks store 🥁 
+            Danny drumsticks store 🥁 v2
           </Link>
         </Typography>
 
