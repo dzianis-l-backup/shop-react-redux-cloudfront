@@ -19,7 +19,7 @@ plugins:
 
 custom:
   client:
-    bucketName: danny-shop-bucket
+    bucketName: danny-shop-serverless-dev
     distributionFolder: dist
   s3BucketName: ${self:custom.client.bucketName}
 
