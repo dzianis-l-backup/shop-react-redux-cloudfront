@@ -16,6 +16,20 @@ This is frontend starter project for nodejs-aws mentoring program. It uses the f
 - [Prettier](https://prettier.io/) as a code formatting tool
 - [TypeScript](https://www.typescriptlang.org/) as a type checking tool
 
+
+## `Tasks`
+
+### `Task 1`
+IAM created 
+### `Task 2` 
+__Cloudfront__ automated distribution address with serverless and serverless finch - https://d2d25cyeqtftsg.cloudfront.net/
+
+__S3 bucket-website__ - https://danny-shop-serverless-dev.s3.eu-west-1.amazonaws.com/index.html
+
+_kindly ask to note that the S3-website won't be accessible in case of deployment with serveless as of its policy to access only via cloudfront_
+
+
+
 ## Available Scripts
 
 ### `start`
@@ -69,3 +83,6 @@ Combination of `cloudfront:setup` and `cloudfront:build:deploy` commands with or
 ### `serverless:remove`
 
 Remove an entire stack configured in `serverless.yml` via CloudFormation.
+
+
+
