@@ -33,7 +33,7 @@ export default function Header() {
             underline="none"
             to="/"
           >
-            Danny drumsticks store 🥁 v2
+            Danny drumsticks store 🥁 v3 - s3 bucket and cloudfront automated deployment
           </Link>
         </Typography>
 
