@@ -7,6 +7,29 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import { theme } from "~/theme";
+import axios from "axios";
+
+const HttpStatuses = {
+  Unauthorized: 401,
+  Forbidden: 403,
+};
+
+axios.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  function (error) {
+    if (error.response.status === HttpStatuses.Unauthorized) {
+      alert("No authentication provided");
+    }
+
+    if (error.response.status === HttpStatuses.Forbidden) {
+      alert("Sorry no access");
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 const queryClient = new QueryClient({
   defaultOptions: {
