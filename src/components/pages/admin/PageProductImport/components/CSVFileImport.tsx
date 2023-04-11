@@ -8,8 +8,15 @@ type CSVFileImportProps = {
   title: string;
 };
 
+const getAuthorizationHeader = () => {
+  const token = localStorage.getItem("authorization_token");
+  const authorization = `Basic ${token}`;
+
+  return { Authorization: authorization };
+};
+
 export default function CSVFileImport({ url, title }: CSVFileImportProps) {
-  const [file, setFile] = React.useState<File>();
+  const [file, setFile] = React.useState<File | string>();
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -26,22 +33,31 @@ export default function CSVFileImport({ url, title }: CSVFileImportProps) {
   const uploadFile = async () => {
     console.log("uploadFile to", url);
 
-    const response = await axios({
-      method: "GET",
-      url,
-      params: {
-        name: encodeURIComponent((file as File).name),
-      },
-    });
-    console.log("File to upload: ", (file as File).name);
-    console.log("Uploading to: ", response.data);
-    const result = await fetch(response.data, {
-      method: "PUT",
-      body: file,
-    });
-    console.log("Result: ", result);
-    setFile("");
+    try {
+      const response = await axios({
+        method: "GET",
+        url,
+        params: {
+          name: encodeURIComponent((file as File).name),
+        },
+        headers: {
+          ...getAuthorizationHeader(),
+        },
+      });
+      console.log("File to upload: ", (file as File).name);
+      console.log("Uploading to: ", response.data);
+      const result = await fetch(response.data, {
+        method: "PUT",
+        body: file,
+      });
+      console.log("Result: ", result);
+
+      setFile("");
+    } catch (error) {
+      console.log(error);
+    }
   };
+
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
