@@ -43,7 +43,8 @@ const Success = () => (
 const steps = ["Review your cart", "Shipping address", "Review your order"];
 
 export default function PageCart() {
-  const { data = [] } = useCart();
+  const { data } = useCart();
+  const carts = data?.data.cart;
   const { mutate: submitOrder } = useSubmitOrder();
   const invalidateCart = useInvalidateCart();
   const [activeStep, setActiveStep] = React.useState<CartStep>(
@@ -51,7 +52,7 @@ export default function PageCart() {
   );
   const [address, setAddress] = useState<Address>(initialAddressValues);
 
-  const isCartEmpty = data.length === 0;
+  const isCartEmpty = carts?.cartItems.length === 0;
 
   const handleNext = () => {
     if (activeStep !== CartStep.ReviewOrder) {
@@ -59,8 +60,8 @@ export default function PageCart() {
       return;
     }
     const values = {
-      items: data.map((i) => ({
-        productId: i.product.id,
+      items: carts?.cartItems.map((i) => ({
+        productId: i.productId,
         count: i.count,
       })),
       address,
@@ -100,7 +101,7 @@ export default function PageCart() {
       </Stepper>
       {isCartEmpty && <CartIsEmpty />}
       {!isCartEmpty && activeStep === CartStep.ReviewCart && (
-        <ReviewCart items={data} />
+        <ReviewCart items={carts?.cartItems} />
       )}
       {activeStep === CartStep.Address && (
         <AddressForm
@@ -110,7 +111,7 @@ export default function PageCart() {
         />
       )}
       {activeStep === CartStep.ReviewOrder && (
-        <ReviewOrder address={address} items={data} />
+        <ReviewOrder address={address} items={carts?.cartItems} />
       )}
       {activeStep === CartStep.Success && <Success />}
       {!isCartEmpty &&
