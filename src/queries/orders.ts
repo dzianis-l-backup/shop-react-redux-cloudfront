@@ -22,8 +22,13 @@ export function useInvalidateOrders() {
 
 export function useUpdateOrderStatus() {
   return useMutation(
-    (values: { id: string; status: OrderStatus; comment: string }) => {
+    (values: {
+      id: string;
+      status: OrderStatus | string;
+      comments: string;
+    }) => {
       const { id, ...data } = values;
+
       return axios.put(`${API_PATHS.order}/order/${id}/status`, data, {
         headers: {
           Authorization: `Basic ${localStorage.getItem("authorization_token")}`,

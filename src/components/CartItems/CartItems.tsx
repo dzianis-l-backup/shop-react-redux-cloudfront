@@ -5,22 +5,19 @@ import ListItemText from "@mui/material/ListItemText";
 import { CartItemsType } from "~/models/CartItem";
 import { formatAsPrice } from "~/utils/utils";
 import AddProductToCart from "~/components/AddProductToCart/AddProductToCart";
-import { useCart } from "~/queries/cart";
 import { Product } from "~/models/Product";
 import { useAvailableProducts } from "~/queries/products";
 
 type CartItemsProps = {
-  items: CartItemsType[];
+  items?: CartItemsType[];
   isEditable: boolean;
 };
 
 const getProductByCartItem = (
   cartItems: CartItemsType,
   products: Product[]
-): Product => {
-  return products.find(
-    (product) => product.id === cartItems.productId
-  ) as Product;
+): Product | undefined => {
+  return products.find((product) => product.id === cartItems.productId);
 };
 
 export default function CartItems({ items, isEditable }: CartItemsProps) {
@@ -41,26 +38,30 @@ export default function CartItems({ items, isEditable }: CartItemsProps) {
   return (
     <>
       <List disablePadding>
-        {items.map((cartItem: CartItemsType) => (
-          <ListItem
-            sx={{ padding: (theme) => theme.spacing(1, 0) }}
-            key={cartItem.productId}
-          >
-            {isEditable && (
-              <AddProductToCart
-                product={getProductByCartItem(cartItem, products)}
+        {items.map((cartItem: CartItemsType) => {
+          const product = getProductByCartItem(cartItem, products);
+
+          if (!product) {
+            return null;
+          }
+
+          return (
+            <ListItem
+              sx={{ padding: (theme) => theme.spacing(1, 0) }}
+              key={cartItem.productId}
+            >
+              {isEditable && <AddProductToCart product={product} />}
+              <ListItemText
+                primary={product.title}
+                secondary={product.description}
               />
-            )}
-            <ListItemText
-              primary={getProductByCartItem(cartItem, products).title}
-              secondary={getProductByCartItem(cartItem, products).description}
-            />
-            <Typography variant="body2">
-              {formatAsPrice(cartItem.price)} x {cartItem.count} ={" "}
-              {formatAsPrice(cartItem.price * cartItem.count)}
-            </Typography>
-          </ListItem>
-        ))}
+              <Typography variant="body2">
+                {formatAsPrice(cartItem.price)} x {cartItem.count} ={" "}
+                {formatAsPrice(cartItem.price * cartItem.count)}
+              </Typography>
+            </ListItem>
+          );
+        })}
         <ListItem sx={{ padding: (theme) => theme.spacing(1, 0) }}>
           <ListItemText primary="Shipping" />
           <Typography variant="body2">Free</Typography>

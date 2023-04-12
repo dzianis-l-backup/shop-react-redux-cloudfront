@@ -4,7 +4,6 @@ import { useQuery, useQueryClient, useMutation } from "react-query";
 import API_PATHS from "~/constants/apiPaths";
 import {
   CartItem,
-  Carts,
   RequestCartItems,
   ResponseCarts,
 } from "~/models/CartItem";

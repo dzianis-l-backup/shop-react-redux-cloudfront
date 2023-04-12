@@ -3,7 +3,7 @@ import CartItemsComponent from "~/components/CartItems/CartItems";
 import { CartItems } from "~/models/CartItem";
 
 type ReviewCartProps = {
-  items: CartItems[];
+  items?: CartItems[];
 };
 
 export default function ReviewCart({ items }: ReviewCartProps) {

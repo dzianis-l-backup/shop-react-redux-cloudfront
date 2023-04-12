@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import ReviewCart from "~/components/pages/PageCart/components/ReviewCart";
 import ReviewOrder from "~/components/pages/PageCart/components/ReviewOrder";
 import PaperLayout from "~/components/PaperLayout/PaperLayout";
-import { Address, AddressSchema, Order } from "~/models/Order";
+import { Delivery, DeliverySchema, Order } from "~/models/Order";
 import Box from "@mui/material/Box";
 import { useCart, useInvalidateCart } from "~/queries/cart";
 import AddressForm from "~/components/pages/PageCart/components/AddressForm";
@@ -20,7 +20,7 @@ enum CartStep {
   Success,
 }
 
-const initialAddressValues = AddressSchema.cast({});
+const initialAddressValues = DeliverySchema.cast({});
 
 const CartIsEmpty = () => (
   <Typography variant="h6" gutterBottom>
@@ -50,7 +50,7 @@ export default function PageCart() {
   const [activeStep, setActiveStep] = React.useState<CartStep>(
     CartStep.ReviewCart
   );
-  const [address, setAddress] = useState<Address>(initialAddressValues);
+  const [delivery, setDelivery] = useState<Delivery>(initialAddressValues);
 
   const isCartEmpty = carts?.cartItems.length === 0;
 
@@ -60,11 +60,7 @@ export default function PageCart() {
       return;
     }
     const values = {
-      items: carts?.cartItems.map((i) => ({
-        productId: i.productId,
-        count: i.count,
-      })),
-      address,
+      delivery,
     };
 
     submitOrder(values as Omit<Order, "id">, {
@@ -79,8 +75,8 @@ export default function PageCart() {
     setActiveStep(activeStep - 1);
   };
 
-  const handleAddressSubmit = (values: Address) => {
-    setAddress(values);
+  const handleAddressSubmit = (values: Delivery) => {
+    setDelivery(values);
     handleNext();
   };
 
@@ -105,13 +101,13 @@ export default function PageCart() {
       )}
       {activeStep === CartStep.Address && (
         <AddressForm
-          initialValues={address}
+          initialValues={delivery}
           onBack={handleBack}
           onSubmit={handleAddressSubmit}
         />
       )}
       {activeStep === CartStep.ReviewOrder && (
-        <ReviewOrder address={address} items={carts?.cartItems} />
+        <ReviewOrder address={delivery} items={carts?.cartItems} />
       )}
       {activeStep === CartStep.Success && <Success />}
       {!isCartEmpty &&
