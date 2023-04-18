@@ -25,8 +25,8 @@ import { useQueries } from "react-query";
 import { useInvalidateOrder, useUpdateOrderStatus } from "~/queries/orders";
 
 type FormValues = {
-  status: OrderStatus;
-  comment: string;
+  status: OrderStatus | string;
+  comments: string;
 };
 
 export default function PageOrder() {
@@ -55,43 +55,24 @@ export default function PageOrder() {
   ] = results;
   const { mutateAsync: updateOrderStatus } = useUpdateOrderStatus();
   const invalidateOrder = useInvalidateOrder();
-  const cartItems: CartItem[] = React.useMemo(() => {
-    if (order && products) {
-      return order.items.map((item: OrderItem) => {
-        const product = products.find((p) => p.id === item.productId);
-        if (!product) {
-          throw new Error("Product not found");
-        }
-        return { product, count: item.count };
-      });
-    }
-    return [];
-  }, [order, products]);
 
   if (isOrderLoading || isProductsLoading) return <p>loading...</p>;
-
-  const statusHistory = order?.statusHistory || [];
-
-  const lastStatusItem = statusHistory[statusHistory.length - 1];
 
   return order ? (
     <PaperLayout>
       <Typography component="h1" variant="h4" align="center">
         Manage order
       </Typography>
-      <ReviewOrder address={order.address} items={cartItems} />
+      <ReviewOrder address={order.delivery} />
       <Typography variant="h6">Status:</Typography>
-      <Typography variant="h6" color="primary">
-        {lastStatusItem?.status.toUpperCase()}
-      </Typography>
       <Typography variant="h6">Change status:</Typography>
       <Box py={2}>
         <Formik
-          initialValues={{ status: lastStatusItem.status, comment: "" }}
+          initialValues={{ status: order.status, comments: "" }}
           enableReinitialize
           onSubmit={(values) =>
             updateOrderStatus(
-              { id: order.id, ...values },
+              { id: id as string, ...values },
               { onSuccess: () => invalidateOrder(order.id) }
             )
           }
@@ -122,7 +103,7 @@ export default function PageOrder() {
                 <Grid item xs={12}>
                   <Field
                     component={TextField}
-                    name="comment"
+                    name="comments"
                     label="Comment"
                     fullWidth
                     autoComplete="off"
@@ -144,31 +125,6 @@ export default function PageOrder() {
           )}
         </Formik>
       </Box>
-      <Typography variant="h6">Status history:</Typography>
-      <TableContainer>
-        <Table aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>Status</TableCell>
-              <TableCell align="right">Date and Time</TableCell>
-              <TableCell align="right">Comment</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {statusHistory.map((statusHistoryItem) => (
-              <TableRow key={order.id}>
-                <TableCell component="th" scope="row">
-                  {statusHistoryItem.status.toUpperCase()}
-                </TableCell>
-                <TableCell align="right">
-                  {new Date(statusHistoryItem.timestamp).toString()}
-                </TableCell>
-                <TableCell align="right">{statusHistoryItem.comment}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
     </PaperLayout>
   ) : null;
 }

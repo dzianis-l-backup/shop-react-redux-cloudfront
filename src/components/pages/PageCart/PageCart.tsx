@@ -7,7 +7,7 @@ import Typography from "@mui/material/Typography";
 import ReviewCart from "~/components/pages/PageCart/components/ReviewCart";
 import ReviewOrder from "~/components/pages/PageCart/components/ReviewOrder";
 import PaperLayout from "~/components/PaperLayout/PaperLayout";
-import { Address, AddressSchema, Order } from "~/models/Order";
+import { Delivery, DeliverySchema, Order } from "~/models/Order";
 import Box from "@mui/material/Box";
 import { useCart, useInvalidateCart } from "~/queries/cart";
 import AddressForm from "~/components/pages/PageCart/components/AddressForm";
@@ -20,7 +20,7 @@ enum CartStep {
   Success,
 }
 
-const initialAddressValues = AddressSchema.cast({});
+const initialAddressValues = DeliverySchema.cast({});
 
 const CartIsEmpty = () => (
   <Typography variant="h6" gutterBottom>
@@ -43,15 +43,16 @@ const Success = () => (
 const steps = ["Review your cart", "Shipping address", "Review your order"];
 
 export default function PageCart() {
-  const { data = [] } = useCart();
+  const { data } = useCart();
+  const carts = data?.data.cart;
   const { mutate: submitOrder } = useSubmitOrder();
   const invalidateCart = useInvalidateCart();
   const [activeStep, setActiveStep] = React.useState<CartStep>(
     CartStep.ReviewCart
   );
-  const [address, setAddress] = useState<Address>(initialAddressValues);
+  const [delivery, setDelivery] = useState<Delivery>(initialAddressValues);
 
-  const isCartEmpty = data.length === 0;
+  const isCartEmpty = carts?.cartItems.length === 0;
 
   const handleNext = () => {
     if (activeStep !== CartStep.ReviewOrder) {
@@ -59,11 +60,7 @@ export default function PageCart() {
       return;
     }
     const values = {
-      items: data.map((i) => ({
-        productId: i.product.id,
-        count: i.count,
-      })),
-      address,
+      delivery,
     };
 
     submitOrder(values as Omit<Order, "id">, {
@@ -78,8 +75,8 @@ export default function PageCart() {
     setActiveStep(activeStep - 1);
   };
 
-  const handleAddressSubmit = (values: Address) => {
-    setAddress(values);
+  const handleAddressSubmit = (values: Delivery) => {
+    setDelivery(values);
     handleNext();
   };
 
@@ -100,17 +97,17 @@ export default function PageCart() {
       </Stepper>
       {isCartEmpty && <CartIsEmpty />}
       {!isCartEmpty && activeStep === CartStep.ReviewCart && (
-        <ReviewCart items={data} />
+        <ReviewCart items={carts?.cartItems} />
       )}
       {activeStep === CartStep.Address && (
         <AddressForm
-          initialValues={address}
+          initialValues={delivery}
           onBack={handleBack}
           onSubmit={handleAddressSubmit}
         />
       )}
       {activeStep === CartStep.ReviewOrder && (
-        <ReviewOrder address={address} items={data} />
+        <ReviewOrder address={delivery} items={carts?.cartItems} />
       )}
       {activeStep === CartStep.Success && <Success />}
       {!isCartEmpty &&

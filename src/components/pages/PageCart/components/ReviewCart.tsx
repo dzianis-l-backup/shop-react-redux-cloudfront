@@ -1,9 +1,9 @@
 import Typography from "@mui/material/Typography";
-import CartItems from "~/components/CartItems/CartItems";
-import { CartItem } from "~/models/CartItem";
+import CartItemsComponent from "~/components/CartItems/CartItems";
+import { CartItems } from "~/models/CartItem";
 
 type ReviewCartProps = {
-  items: CartItem[];
+  items?: CartItems[];
 };
 
 export default function ReviewCart({ items }: ReviewCartProps) {
@@ -12,7 +12,7 @@ export default function ReviewCart({ items }: ReviewCartProps) {
       <Typography variant="h6" gutterBottom>
         Order summary
       </Typography>
-      <CartItems items={items} isEditable />
+      <CartItemsComponent items={items} isEditable />
     </>
   );
 }

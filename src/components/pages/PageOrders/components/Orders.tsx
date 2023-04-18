@@ -12,11 +12,19 @@ import {
   useInvalidateOrders,
   useOrders,
 } from "~/queries/orders";
+import { Order } from "~/models/Order";
 
 export default function Orders() {
   const { data } = useOrders();
   const invalidateOrders = useInvalidateOrders();
   const { mutate: deleteOrder } = useDeleteOrder();
+
+  if (!data) {
+    return null;
+  }
+
+  // @ts-ignore
+  const orders = data?.data.orders as Order[];
 
   return (
     <TableContainer component={Paper}>
@@ -24,23 +32,19 @@ export default function Orders() {
         <TableHead>
           <TableRow>
             <TableCell>From</TableCell>
-            <TableCell align="right">Items count</TableCell>
             <TableCell align="right">Address</TableCell>
             <TableCell align="right">Status</TableCell>
             <TableCell align="right">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {data?.map((order) => (
+          {orders?.map((order) => (
             <TableRow key={order.id}>
               <TableCell component="th" scope="row">
-                {order.address?.firstName} {order.address?.lastName}
+                {order.delivery?.firstName} {order.delivery?.lastName}
               </TableCell>
-              <TableCell align="right">{order.items.length}</TableCell>
-              <TableCell align="right">{order.address?.address}</TableCell>
-              <TableCell align="right">
-                {order.statusHistory[order.statusHistory.length - 1].status}
-              </TableCell>
+              <TableCell align="right">{order.delivery?.address}</TableCell>
+              <TableCell align="right">{order?.status}</TableCell>
               <TableCell align="right">
                 <Button
                   size="small"
